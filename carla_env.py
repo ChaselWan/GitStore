@@ -29,27 +29,27 @@ from gym_carla.envs.misc import *
 class CarlaEnv(gym.Env):
   """An OpenAI gym wrapper for CARLA simulator."""
 
-  def __init__(self, params):
+  def __init__(self, params):   # params be delivered by gym.make('carla-v0',params) in main()
     # parameters
     self.display_size = params['display_size']  # rendering screen size
-    self.max_past_step = params['max_past_step']
+    self.max_past_step = params['max_past_step']  # the number of past steps to draw
     self.number_of_vehicles = params['number_of_vehicles']
     self.number_of_walkers = params['number_of_walkers']
-    self.dt = params['dt']
-    self.task_mode = params['task_mode']
-    self.max_time_episode = params['max_time_episode']
-    self.max_waypt = params['max_waypt']
-    self.obs_range = params['obs_range']
-    self.lidar_bin = params['lidar_bin']
-    self.d_behind = params['d_behind']
-    self.obs_size = int(self.obs_range/self.lidar_bin)
-    self.out_lane_thres = params['out_lane_thres']
+    self.dt = params['dt']  # time interval between two frames
+    self.task_mode = params['task_mode']  # mode of the task,[random,roundabout(only for Town03)]
+    self.max_time_episode = params['max_time_episode']  # maximum timesteps per episode
+    self.max_waypt = params['max_waypt']  # maximum number of waypoints
+    self.obs_range = params['obs_range']  # observation range(meter)可视距离(是车前车后各32m还是连车身总共32m？)
+    self.lidar_bin = params['lidar_bin']  # bin size of lindar sensor(meter) 激光雷达传感器箱体尺寸(为啥要设置这个？)
+    self.d_behind = params['d_behind']  # distance behind the ego vehivle(meter)
+    self.obs_size = int(self.obs_range/self.lidar_bin)  # ?  # 32x8=256
+    self.out_lane_thres = params['out_lane_thres']  # threshold for out of lane
     self.desired_speed = params['desired_speed']
-    self.max_ego_spawn_times = params['max_ego_spawn_times']
-    self.display_route = params['display_route']
-    if 'pixor' in params.keys():
-      self.pixor = params['pixor']
-      self.pixor_size = params['pixor_size']
+    self.max_ego_spawn_times = params['max_ego_spawn_times']  # maximum times to spawn ego vehicle
+    self.display_route = params['display_route']  # whether to render the desired route(True or False)
+    if 'pixor' in params.keys(): # pixor:一种基于BEV的点云目标检测
+      self.pixor = params['pixor']  # whether to output PIXOR observation(True of False)
+      self.pixor_size = params['pixor_size']  # size of the pixor labels
     else:
       self.pixor = False
 
@@ -60,13 +60,13 @@ class CarlaEnv(gym.Env):
       self.dests = None
 
     # action and observation spaces
-    self.discrete = params['discrete']
-    self.discrete_act = [params['discrete_acc'], params['discrete_steer']] # acc, steer
-    self.n_acc = len(self.discrete_act[0])
-    self.n_steer = len(self.discrete_act[1])
+    self.discrete = params['discrete']  # whether to use discrete control space(True of False)
+    self.discrete_act = [params['discrete_acc'], params['discrete_steer']] # [ [] , [] ] = [acc,steer]
+    self.n_acc = len(self.discrete_act[0])  # len of acc size
+    self.n_steer = len(self.discrete_act[1])  # len of steer size
     if self.discrete:
-      self.action_space = spaces.Discrete(self.n_acc*self.n_steer)
-    else:
+      self.action_space = spaces.Discrete(self.n_acc*self.n_steer)  # Discrete（n） = [0,1,...,n-1]
+    else:  # space.Box(low,high,shape,dtype) means 在shape里的每一个数都是值在[low,high]之间的dtype数据
       self.action_space = spaces.Box(np.array([params['continuous_accel_range'][0], 
       params['continuous_steer_range'][0]]), np.array([params['continuous_accel_range'][1],
       params['continuous_steer_range'][1]]), dtype=np.float32)  # acc, steer
@@ -83,7 +83,7 @@ class CarlaEnv(gym.Env):
         'vh_regr': spaces.Box(low=-5, high=5, shape=(self.pixor_size, self.pixor_size, 6), dtype=np.float32),
         'pixor_state': spaces.Box(np.array([-1000, -1000, -1, -1, -5]), np.array([1000, 1000, 1, 1, 20]), dtype=np.float32)
         })
-    self.observation_space = spaces.Dict(observation_space_dict)
+    self.observation_space = spaces.Dict(observation_space_dict)  # Dict:一个字典类型的数据结构，它可以将不同的数据结构嵌入进来
 
     # Connect to carla server and get world object
     print('connecting to Carla server...')
@@ -96,11 +96,11 @@ class CarlaEnv(gym.Env):
     self.world.set_weather(carla.WeatherParameters.ClearNoon)
 
     # Get spawn points
-    self.vehicle_spawn_points = list(self.world.get_map().get_spawn_points())
+    self.vehicle_spawn_points = list(self.world.get_map().get_spawn_points())  # map.get_spawn_points() 返回一个推荐生成点的列表
     self.walker_spawn_points = []
     for i in range(self.number_of_walkers):
-      spawn_point = carla.Transform()
-      loc = self.world.get_random_location_from_navigation()
+      spawn_point = carla.Transform()  # 看起来是先生成Transform数据类型，然后再在后续用loc传进location改
+      loc = self.world.get_random_location_from_navigation()  # 返回人行道上的随机点?
       if (loc != None):
         spawn_point.location = loc
         self.walker_spawn_points.append(spawn_point)
@@ -146,8 +146,10 @@ class CarlaEnv(gym.Env):
     # Get pixel grid points
     if self.pixor:
       x, y = np.meshgrid(np.arange(self.pixor_size), np.arange(self.pixor_size)) # make a canvas with coordinates
-      x, y = x.flatten(), y.flatten()
-      self.pixel_grid = np.vstack((x, y)).T
+      #np.meshgrid()生成网格点坐标矩阵。
+      #np.arange([start, ]stop, [step, ]dtype=None) : start起点值，可忽略不写默认为0；stop终点值，生成值不包括终点值；step步长，可忽略不写默认为0。
+      x, y = x.flatten(), y.flatten()  # flatten() == flatten(0)  means 将x从0维展开成shape = n1 *n2 * ... *s，其中n1、n2、...s为x原有的维数
+      self.pixel_grid = np.vstack((x, y)).T  # np.vstack()返回竖直堆叠的数组，T为转置
 
   def reset(self):
     # Clear sensor objects  
@@ -162,7 +164,7 @@ class CarlaEnv(gym.Env):
     self._set_synchronous_mode(False)
 
     # Spawn surrounding vehicles
-    random.shuffle(self.vehicle_spawn_points)
+    random.shuffle(self.vehicle_spawn_points)  # random.shuffle(list)用于将原list次序打乱
     count = self.number_of_vehicles
     if count > 0:
       for spawn_point in self.vehicle_spawn_points:
@@ -171,7 +173,7 @@ class CarlaEnv(gym.Env):
         if count <= 0:
           break
     while count > 0:
-      if self._try_spawn_random_vehicle_at(random.choice(self.vehicle_spawn_points), number_of_wheels=[4]):
+      if self._try_spawn_random_vehicle_at(random.choice(self.vehicle_spawn_points), number_of_wheels=[4]): #没达到生成上线需要随机寻找地点生成车辆
         count -= 1
 
     # Spawn pedestrians
@@ -187,9 +189,9 @@ class CarlaEnv(gym.Env):
       if self._try_spawn_random_walker_at(random.choice(self.walker_spawn_points)):
         count -= 1
 
-    # Get actors polygon list
+    # Get actors polygon list获取actor的多边形边框list
     self.vehicle_polygons = []
-    vehicle_poly_dict = self._get_actor_polygons('vehicle.*')
+    vehicle_poly_dict = self._get_actor_polygons('vehicle.*')  # 获取vehicle的多边形边框
     self.vehicle_polygons.append(vehicle_poly_dict)
     self.walker_polygons = []
     walker_poly_dict = self._get_actor_polygons('walker.*')
@@ -204,7 +206,7 @@ class CarlaEnv(gym.Env):
       if self.task_mode == 'random':
         transform = random.choice(self.vehicle_spawn_points)
       if self.task_mode == 'roundabout':
-        self.start=[52.1+np.random.uniform(-5,5),-4.2, 178.66] # random
+        self.start=[52.1+np.random.uniform(-5,5),-4.2, 178.66] # np.random.uniform()作用于从一个均匀分布的区域中随机采样。
         # self.start=[52.1,-4.2, 178.66] # static
         transform = set_carla_transform(self.start)
       if self._try_spawn_ego_vehicle_at(transform):
@@ -214,14 +216,14 @@ class CarlaEnv(gym.Env):
         time.sleep(0.1)
 
     # Add collision sensor
-    self.collision_sensor = self.world.spawn_actor(self.collision_bp, carla.Transform(), attach_to=self.ego)
+    self.collision_sensor = self.world.spawn_actor(self.collision_bp, carla.Transform(), attach_to=self.ego)  # line419 spawm_ego_vehicle:self.ego = vehicle
     self.collision_sensor.listen(lambda event: get_collision_hist(event))
     def get_collision_hist(event):
-      impulse = event.normal_impulse
+      impulse = event.normal_impulse  # normal_impulse表示碰撞力的值
       intensity = np.sqrt(impulse.x**2 + impulse.y**2 + impulse.z**2)
       self.collision_hist.append(intensity)
-      if len(self.collision_hist)>self.collision_hist_l:
-        self.collision_hist.pop(0)
+      if len(self.collision_hist)>self.collision_hist_l: #有碰撞
+        self.collision_hist.pop(0)  # list.pop(index)移除index位置的值
     self.collision_hist = []
 
     # Add lidar sensor
@@ -234,10 +236,10 @@ class CarlaEnv(gym.Env):
     self.camera_sensor = self.world.spawn_actor(self.camera_bp, self.camera_trans, attach_to=self.ego)
     self.camera_sensor.listen(lambda data: get_camera_img(data))
     def get_camera_img(data):
-      array = np.frombuffer(data.raw_data, dtype = np.dtype("uint8"))
+      array = np.frombuffer(data.raw_data, dtype = np.dtype("uint8"))  # numpy.frombuffer(buffer,dtype,count=-1,offset=0) : buffer表示暴露缓冲接口的对象;dtype代表返回的数据类型
       array = np.reshape(array, (data.height, data.width, 4))
-      array = array[:, :, :3]
-      array = array[:, :, ::-1]
+      array = array[:, :, :3]  # :3代表1:3
+      array = array[:, :, ::-1]  # ::-1，代表从后往前截取
       self.camera_img = array
 
     # Update timesteps
@@ -267,7 +269,7 @@ class CarlaEnv(gym.Env):
 
     # Convert acceleration to throttle and brake
     if acc > 0:
-      throttle = np.clip(acc/3,0,1)
+      throttle = np.clip(acc/3,0,1)  # numpy.clip(a,a_min,a_max,out=None),a:输入的数组；a_min:限定的最小值；out:剪裁后的数组存入的数组。
       brake = 0
     else:
       throttle = 0
@@ -332,10 +334,12 @@ class CarlaEnv(gym.Env):
   def _init_renderer(self):
     """Initialize the birdeye view renderer.
     """
+    #pygame渲染
     pygame.init()
     self.display = pygame.display.set_mode(
     (self.display_size * 3, self.display_size),
-    pygame.HWSURFACE | pygame.DOUBLEBUF)
+    pygame.HWSURFACE | pygame.DOUBLEBUF)  # pygame.display.set_mode(size=(0, 0),flags=0,depth=0,display=0,vsync=0)创建Surface屏幕对象，返回值是surface对象
+                                          # pygame.HWSURFACE为硬件加速；pygame.DOUBLEBUF为双缓冲模式
 
     pixels_per_meter = self.display_size / self.obs_range
     pixels_ahead_vehicle = (self.obs_range/2 - self.d_behind) * pixels_per_meter
@@ -459,10 +463,13 @@ class CarlaEnv(gym.Env):
     birdeye_render_types = ['roadmap', 'actors']
     if self.display_route:
       birdeye_render_types.append('waypoints')
-    self.birdeye_render.render(self.display, birdeye_render_types)
-    birdeye = pygame.surfarray.array3d(self.display)
-    birdeye = birdeye[0:self.display_size, :, :]
-    birdeye = display_to_rgb(birdeye, self.obs_size)
+    self.birdeye_render.render(self.display, birdeye_render_types)  # 把birdeye_render_types这个string list传进BirdEyeRender的render函数进行渲染画图
+    birdeye = pygame.surfarray.array3d(self.display)  # pygame.surfarray.array3d(self.display)将self.display(== surface,line336)像素复制到3d数组中
+    # 在Pygame中窗口和图片都称为Surface，所谓Surface对象在Pygame中就是用来表示图像的对象，图片是由像素组成的，Surface 对象具有固定的分辨率和像素格式。
+    birdeye = birdeye[0:self.display_size, :, :]  # 剪裁第一维，裁成[0:64]。（line36：self.display_size = params['display_size']）
+    # 为什么要裁剪?
+    birdeye = display_to_rgb(birdeye, self.obs_size) 
+    # (misc.py line224)；display【pygame display input】, obs_size【rgb image size】   :->rgb【rgb image uint8 matrix】
 
     # Roadmap
     if self.pixor:
@@ -476,7 +483,7 @@ class CarlaEnv(gym.Env):
       # Add ego vehicle
       for i in range(self.obs_size):
         for j in range(self.obs_size):
-          if abs(birdeye[i, j, 0] - 255)<20 and abs(birdeye[i, j, 1] - 0)<20 and abs(birdeye[i, j, 0] - 255)<20:
+          if abs(birdeye[i, j, 0] - 255)<20 and abs(birdeye[i, j, 1] - 0)<20 and abs(birdeye[i, j, 0] - 255)<20:  #  ？
             roadmap[i, j, :] = birdeye[i, j, :]
 
     # Display birdeye image
@@ -509,7 +516,7 @@ class CarlaEnv(gym.Env):
     # Get the final lidar image
     lidar = np.concatenate((lidar, wayptimg), axis=2)
     lidar = np.flip(lidar, axis=1)
-    lidar = np.rot90(lidar, 1)
+    lidar = np.rot90(lidar, 1)   # 旋转90°是因为初始状态下点云的图像是车辆从右往左运动
     lidar = lidar * 255
 
     # Display lidar image
