@@ -39,7 +39,7 @@ class CarlaEnv(gym.Env):
     self.task_mode = params['task_mode']  # mode of the task,[random,roundabout(only for Town03)]
     self.max_time_episode = params['max_time_episode']  # maximum timesteps per episode
     self.max_waypt = params['max_waypt']  # maximum number of waypoints
-    self.obs_range = params['obs_range']  # observation range(meter)可视距离(是车前车后各32m还是连车身总共32m？)
+    self.obs_range = params['obs_range']  # observation range(meter)可视距离(应该是连车身总共32m？)
     self.lidar_bin = params['lidar_bin']  # bin size of lindar sensor(meter) 激光雷达传感器箱体尺寸(为啥要设置这个？)
     self.d_behind = params['d_behind']  # distance behind the ego vehivle(meter)
     self.obs_size = int(self.obs_range/self.lidar_bin)  # ?  # 32x8=256
@@ -343,6 +343,7 @@ class CarlaEnv(gym.Env):
                                           # pygame.HWSURFACE为硬件加速；pygame.DOUBLEBUF为双缓冲模式
 
     pixels_per_meter = self.display_size / self.obs_range  #每米像素数(pixel_per_meter)是用来定义相机在给定距离上提供的潜在图像细节量的测量方法。
+    #个人理解是可视距离与渲染后的图像距离之间的转换?
     pixels_ahead_vehicle = (self.obs_range/2 - self.d_behind) * pixels_per_meter
     birdeye_params = {
       'screen_size': [self.display_size, self.display_size],
