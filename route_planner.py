@@ -103,7 +103,7 @@ class RoutePlanner():
     while len(self._waypoint_buffer)<self._buffer_size:
       if self._waypoints_queue:
         self._waypoint_buffer.append(
-          self._waypoints_queue.popleft())
+          self._waypoints_queue.popleft())   # deque.popleft()：移去并返回deque最左侧的那个元素
       else:
         break
 
