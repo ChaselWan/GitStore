@@ -40,7 +40,7 @@ class RoutePlanner():
     self._buffer_size = buffer_size
     self._waypoint_buffer = deque(maxlen=self._buffer_size)
 
-    self._waypoints_queue = deque(maxlen=600)
+    self._waypoints_queue = deque(maxlen=600)  # deque()是一种类似栈的数据类型，实现了在两端快速添加(append)和弹出(pop)的功能
     self._current_waypoint = self._map.get_waypoint(self._vehicle.get_location())
     self._waypoints_queue.append( (self._current_waypoint.next(self._sampling_radius)[0], RoadOption.LANEFOLLOW))
     self._target_road_option = RoadOption.LANEFOLLOW
