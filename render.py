@@ -414,7 +414,7 @@ class BirdeyeRender(object):
 
     # Render Actors
     self.actors_surface = pygame.Surface((self.map_image.surface.get_width(), self.map_image.surface.get_height()))
-    self.actors_surface.set_colorkey(COLOR_BLACK)
+    self.actors_surface.set_colorkey(COLOR_BLACK)    # set_colorkey()设置透明颜色键，在当前surface上与该颜色键相同的颜色将变成透明的。
 
     self.waypoints_surface = pygame.Surface((self.map_image.surface.get_width(), self.map_image.surface.get_height()))
     self.waypoints_surface.set_colorkey(COLOR_BLACK)
