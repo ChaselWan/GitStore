@@ -503,6 +503,7 @@ class CarlaEnv(gym.Env):
     # Separate the 3D space to bins for point cloud, x and y is set according to self.lidar_bin,
     # and z is set to be two bins.
     y_bins = np.arange(-(self.obs_range - self.d_behind), self.d_behind+self.lidar_bin, self.lidar_bin)
+    #numpy.arrange(start,stop,step,dtype(default usually))
     x_bins = np.arange(-self.obs_range/2, self.obs_range/2+self.lidar_bin, self.lidar_bin)
     z_bins = [-self.lidar_height-1, -self.lidar_height+0.25, 1]
     # Get lidar image according to the bins
