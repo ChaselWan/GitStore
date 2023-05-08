@@ -520,8 +520,8 @@ class CarlaEnv(gym.Env):
     wayptimg = np.fliplr(np.rot90(wayptimg, 3))
 
     # Get the final lidar image
-    lidar = np.concatenate((lidar, wayptimg), axis=2)
-    lidar = np.flip(lidar, axis=1)
+    lidar = np.concatenate((lidar, wayptimg), axis=2)  # 拼接两个数组
+    lidar = np.flip(lidar, axis=1)  #在axis=1这个维度上翻转
     lidar = np.rot90(lidar, 1)   # 旋转90°是因为初始状态下点云的图像是车辆从右往左运动
     lidar = lidar * 255
 
