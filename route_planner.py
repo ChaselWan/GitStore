@@ -114,7 +114,7 @@ class RoutePlanner():
 
     # current vehicle waypoint
     self._current_waypoint = self._map.get_waypoint(self._vehicle.get_location())
-    # target waypoint
+    # target waypoint永远是下一个点
     self._target_waypoint, self._target_road_option = self._waypoint_buffer[0]
 
     # purge the queue of obsolete waypoints
