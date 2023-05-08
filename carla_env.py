@@ -77,6 +77,7 @@ class CarlaEnv(gym.Env):
       'state': spaces.Box(np.array([-2, -1, -5, 0]), np.array([2, 1, 30, 1]), dtype=np.float32)
       }
     if self.pixor:
+      # dict1.update(dict2)：将dict2的键值对添加到dict1里
       observation_space_dict.update({
         'roadmap': spaces.Box(low=0, high=255, shape=(self.obs_size, self.obs_size, 3), dtype=np.uint8),
         'vh_clas': spaces.Box(low=0, high=1, shape=(self.pixor_size, self.pixor_size, 1), dtype=np.float32),
