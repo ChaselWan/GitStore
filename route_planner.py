@@ -122,7 +122,7 @@ class RoutePlanner():
     max_index = -1
 
     for i, (waypoint, _) in enumerate(self._waypoint_buffer):
-      if distance_vehicle(  # distance_vehicle 返回 当下位置vehicle_transform 到下一个waypoint点的距离
+      if distance_vehicle(  # distance_vehicle 返回 当下位置vehicle_transform 到 各导航点waypoint的位置，以便确定车辆处于哪一个导航点范围
           waypoint, vehicle_transform) < self._min_distance:
         max_index = i
     if max_index >= 0:
