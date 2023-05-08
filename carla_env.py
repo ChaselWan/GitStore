@@ -280,7 +280,7 @@ class CarlaEnv(gym.Env):
     act = carla.VehicleControl(throttle=float(throttle), steer=float(-steer), brake=float(brake))
     self.ego.apply_control(act)
 
-    self.world.tick()
+    self.world.tick()  # world.tick()只出现于同步模式，用与让simulator更新一次
 
     # Append actors polygon list
     vehicle_poly_dict = self._get_actor_polygons('vehicle.*')
