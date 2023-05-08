@@ -342,7 +342,7 @@ class CarlaEnv(gym.Env):
     pygame.HWSURFACE | pygame.DOUBLEBUF)  # pygame.display.set_mode(size=(0, 0),flags=0,depth=0,display=0,vsync=0)创建Surface屏幕对象，返回值是surface对象
                                           # pygame.HWSURFACE为硬件加速；pygame.DOUBLEBUF为双缓冲模式
 
-    pixels_per_meter = self.display_size / self.obs_range
+    pixels_per_meter = self.display_size / self.obs_range  #每米像素数(pixel_per_meter)是用来定义相机在给定距离上提供的潜在图像细节量的测量方法。
     pixels_ahead_vehicle = (self.obs_range/2 - self.d_behind) * pixels_per_meter
     birdeye_params = {
       'screen_size': [self.display_size, self.display_size],
