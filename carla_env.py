@@ -508,7 +508,7 @@ class CarlaEnv(gym.Env):
     z_bins = [-self.lidar_height-1, -self.lidar_height+0.25, 1]
     # Get lidar image according to the bins
     lidar, _ = np.histogramdd(point_cloud, bins=(x_bins, y_bins, z_bins))
-           # np.histogramdd(sample,bins) 计算一些数据的多维直方图，bins说明沿每个维度单调增加的 bin 边的数组序列。
+           # np.histogramdd(sample,bins) 计算一些数据的多维直方图，bins说明沿每个维度单调增加的 bin 边的数组序列。用于绘图的时候将点云数据控制在一个长方箱体内。
     lidar[:,:,0] = np.array(lidar[:,:,0]>0, dtype=np.uint8)
     lidar[:,:,1] = np.array(lidar[:,:,1]>0, dtype=np.uint8)
     # Add the waypoints to lidar image
