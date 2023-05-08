@@ -491,6 +491,7 @@ class CarlaEnv(gym.Env):
 
     # Display birdeye image
     birdeye_surface = rgb_to_display_surface(birdeye, self.display_size)
+    # rgb_to_display_surface(misc,line236):rgb【rgb image uint8 matrix】,display_size【display size】   :->surface【pygame surface】
     self.display.blit(birdeye_surface, (0, 0))  # surface.blit()旨在将一个图像绘制到另一个图像的上方
 
     ## Lidar image generation
