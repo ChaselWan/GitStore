@@ -306,7 +306,8 @@ class CarlaEnv(gym.Env):
     self.total_step += 1
 
     return (self._get_obs(), self._get_reward(), self._terminal(), copy.deepcopy(info))
-
+    # copy.deepcopy()的用法是将某一个变量的值赋值给另一个变量(此时两个变量地址不同)，因为地址不同，所以可以防止变量间相互干扰。
+    
   def seed(self, seed=None):
     self.np_random, seed = seeding.np_random(seed)
     return [seed]
