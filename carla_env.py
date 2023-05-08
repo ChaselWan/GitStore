@@ -474,21 +474,6 @@ class CarlaEnv(gym.Env):
     birdeye = display_to_rgb(birdeye, self.obs_size) 
     # (misc.py line224)；display【pygame display input】, obs_size【rgb image size】   :->rgb【rgb image uint8 matrix】
 
-    # Roadmap
-    if self.pixor:
-      roadmap_render_types = ['roadmap']
-      if self.display_route:
-        roadmap_render_types.append('waypoints')
-      self.birdeye_render.render(self.display, roadmap_render_types)
-      roadmap = pygame.surfarray.array3d(self.display)
-      roadmap = roadmap[0:self.display_size, :, :]
-      roadmap = display_to_rgb(roadmap, self.obs_size)
-      # Add ego vehicle
-      for i in range(self.obs_size):
-        for j in range(self.obs_size):
-          if abs(birdeye[i, j, 0] - 255)<20 and abs(birdeye[i, j, 1] - 0)<20 and abs(birdeye[i, j, 0] - 255)<20:  #  ？
-            roadmap[i, j, :] = birdeye[i, j, :]
-
     # Display birdeye image
     birdeye_surface = rgb_to_display_surface(birdeye, self.display_size)
     # rgb_to_display_surface(misc,line236):rgb【rgb image uint8 matrix】,display_size【display size】   :->surface【pygame surface】
