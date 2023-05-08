@@ -493,7 +493,7 @@ class BirdeyeRender(object):
             # yellow
             color = pygame.Color(255, 255, math.floor(color_value*255))
           
-        pygame.draw.polygon(surface, color, corners)
+        pygame.draw.polygon(surface, color, corners)  # pygame.draw.polygon()画多边形
 
   def render_waypoints(self, surface, waypoints, world_to_pixel):
     if self.red_light:
