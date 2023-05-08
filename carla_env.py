@@ -298,7 +298,7 @@ class CarlaEnv(gym.Env):
     # state information
     info = {
       'waypoints': self.waypoints,
-      'vehicle_front': self.vehicle_front
+      'vehicle_front': self.vehicle_front  # 前方是否有车辆阻挡
     }
     
     # Update timesteps
