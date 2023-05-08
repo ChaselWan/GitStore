@@ -104,7 +104,7 @@ class RoutePlanner():
       if self._waypoints_queue:
         self._waypoint_buffer.append(
           self._waypoints_queue.popleft())   # deque.popleft()：移去并返回deque最左侧的那个元素
-      else:
+      else:   # 如果_waypoints_queue为空
         break
 
     waypoints=[]
