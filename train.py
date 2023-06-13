@@ -81,16 +81,16 @@ model.add(Dense(units=10))
 model.compile(optimizer='adam', loss='mean_squared_error')
 model.summary()
 
-ccc = 10079-100-10+1
-new_X_train = numpy.zeros((ccc, 100, 1))
-new_Y_train = numpy.zeros((ccc, 10))
+num_train = 10079-100-10+1
+new_X_train = numpy.zeros((num_train, 100, 1))
+new_Y_train = numpy.zeros((num_train, 10))
 
 # 每隔100个元素，切片做成一个数组，将数组赋值new_X_train的一个元素里
 # 从100+i 开始，每隔10个元素，将其切片做成数组（二维，后面赋值0），赋值给new_Y_train的一个元素上
-for i in range(ccc):
+for i in range(num_train):
   new_X_train[i] = train[i:i+100]
 
-for i in range(ccc):
+for i in range(num_train):
   new_Y_train[i] = train[100+i:100+i+10, 0 ]
 # 大概意思就是用前一百个数据预测后十个数据
   
