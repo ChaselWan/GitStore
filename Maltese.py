@@ -6,7 +6,7 @@ class Maltese(object):
     super(Maltese, self).__init__(parent)
     self.show()
     # 一些参数
-    self.ROOT_DIR = 'E:\Users\Admin\Desktop\日程表'
+    self.ROOT_DIR = 'E:\\Users\\Admin\\Desktop\\日程表'
     self.pet_name = 'Maltese'
     self.actions = {'hug':[str(i) for i in range(1, 6)]}
     
