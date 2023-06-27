@@ -93,8 +93,8 @@ class Maltese(object):
   def quit(self):
     self.close()
     sys.exit()
-
-
+    
+    
   '''随机做一个动作'''
   def randomAct(self):
     if not self.is_running_action:  # not False
