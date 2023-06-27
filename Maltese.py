@@ -120,3 +120,5 @@ class Maltese(object):
   def setImage(self, image):
     self.image.setPixmap(QPixmap.fromImage(image))
     
+if __name__ == '__main__':
+  DesktopPet = Maltese()
