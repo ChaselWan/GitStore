@@ -55,7 +55,7 @@ class Maltese(object):
     pet_images = []
     for action in self.actions.keys: # action = 'hug' or else
       pet_images.append([self.loadImage(os.path.join(self.ROOT_DIR, self.pet_name, action, item + '.png')) for item in action])  # pet_images = [[],[],[],[],...]
-    iconpath = os.path.join(self.ROOT_DIR, pet_name, '0.gif')  # 最初出现的图像的地址，轻轻地功德小狗一下
+    iconpath = os.path.join(self.ROOT_DIR, pet_name, action, '1.png')  # 最初出现的图像的地址，轻轻地功德小狗一下
     return pet_images_dict, iconpath
 
   '''鼠标左键按下时, 宠物将和鼠标位置绑定'''
