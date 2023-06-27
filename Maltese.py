@@ -1,7 +1,17 @@
 # DeskTop Pet Maltese
-import PyQt5
 
-class Maltese(object):
+import os
+import sys
+import time
+import random
+import requests
+import threading
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5 import QtWidgets, QtGui
+
+class Maltese(QWidget):
   def __init__(self, parent=None, **kwargs):
     super(Maltese, self).__init__(parent)
     self.show()
