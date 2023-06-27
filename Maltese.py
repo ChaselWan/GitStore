@@ -61,12 +61,11 @@ class Maltese(QWidget):
   def LoadPetImages(self):
     # 与源代码不同，我需要将一个线条小狗存成 Maltese/动作场景/item.png
     # 所以actions应该是一个dict
-    pet_images_dict = {}
     pet_images = []
-    for action in self.actions.keys: # action = 'hug' or else
+    for action in self.actions.keys(): # action = 'hug' or else
       pet_images.append([self.loadImage(os.path.join(self.ROOT_DIR, self.pet_name, action, item + '.png')) for item in action])  # pet_images = [[],[],[],[],...]
-    iconpath = os.path.join(self.ROOT_DIR, pet_name, action, '1.png')  # 最初出现的图像的地址，轻轻地功德小狗一下
-    return pet_images_dict, iconpath
+    iconpath = os.path.join(self.ROOT_DIR, self.pet_name, 'hug', '1.png')  # 最初出现的图像的地址，轻轻地功德小狗一下
+    return pet_images, iconpath
 
   '''鼠标左键按下时, 宠物将和鼠标位置绑定'''
   def mousePressEvent(self, event):
@@ -109,8 +108,8 @@ class Maltese(QWidget):
   def randomAct(self):
     if not self.is_running_action:  # not False
       self.is_running_action = True
-      self.action_choice = random.choice(self.actions.keys)  
-      self.action_images = self.pet_images_dict[self.action_choice]  # 把一个动作的所有图像赋值
+      self.action_choice = random.choice(len(self.actions.keys())  
+      self.action_images = self.pet_images(self.action_choice)  # 把一个动作的所有图像赋值
       self.action_max_len = len(self.action_images)
       self.action_pointer = 0
     self.runFrame()
@@ -122,7 +121,6 @@ class Maltese(QWidget):
         self.is_running_action = False
         self.action_pointer = 0
         self.action_max_len = 0
-
       self.setImage(self.action_images[self.action_pointer])
       self.action_pointer += 1
     
@@ -131,4 +129,8 @@ class Maltese(QWidget):
     self.image.setPixmap(QPixmap.fromImage(image))
     
 if __name__ == '__main__':
-  DesktopPet = Maltese()
+  config = {}
+  app = QApplication(sys.argv)
+  client = Maltese(**config)
+  client.show()
+  sys.exit(app.exec_())
