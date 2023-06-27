@@ -108,7 +108,7 @@ class Maltese(QWidget):
   def randomAct(self):
     if not self.is_running_action:  # not False
       self.is_running_action = True
-      self.action_choice = random.choice(len(self.actions.keys())  
+      self.action_choice = random.choice(len(self.actions.keys()))
       self.action_images = self.pet_images(self.action_choice)  # 把一个动作的所有图像赋值
       self.action_max_len = len(self.action_images)
       self.action_pointer = 0
